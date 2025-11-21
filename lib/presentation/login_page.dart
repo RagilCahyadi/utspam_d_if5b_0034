@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utspam_d_if5b_0034/presentation/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,19 +29,33 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircleAvatar(
-                        backgroundColor: const Color.fromRGBO(218, 243, 232, 1.0),
+                        backgroundColor: const Color.fromRGBO(
+                          218,
+                          243,
+                          232,
+                          1.0,
+                        ),
                         radius: 40,
-                        child: Image.asset('assets/images/pill.png', height: 40),
+                        child: Image.asset(
+                          'assets/images/pill.png',
+                          height: 40,
+                        ),
                       ),
                       SizedBox(height: 10),
                       Text(
                         'Kita Sehat',
-                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       SizedBox(height: 10),
                       Text(
                         'Kami Hadir Sebagai Partner sehatmu',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                       SizedBox(height: 50),
                       Form(
@@ -49,7 +64,8 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             TextFormField(
                               controller: _usernameController,
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "Silahkan masukkan username anda";
@@ -65,7 +81,8 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             TextFormField(
                               controller: _passwordController,
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "Silahkan masukkan password anda";
@@ -82,7 +99,9 @@ class _LoginPageState extends State<LoginPage> {
                                 icon: Icon(Icons.lock),
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    isObscure ? Icons.visibility_off : Icons.visibility,
+                                    isObscure
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -108,7 +127,12 @@ class _LoginPageState extends State<LoginPage> {
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color.fromRGBO(16, 185, 129, 1),
+                                  backgroundColor: const Color.fromRGBO(
+                                    16,
+                                    185,
+                                    129,
+                                    1,
+                                  ),
                                   foregroundColor: Colors.white,
                                 ),
                                 child: Text(
@@ -130,21 +154,15 @@ class _LoginPageState extends State<LoginPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "Belum punya akun? "
-                  ),
+                  Text("Belum punya akun? "),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginPage(), 
-                        ),
+                        MaterialPageRoute(builder: (context) => RegisterPage()),
                       );
                     },
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero
-                    ),
+                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     child: Text(
                       "Daftar disini",
                       style: TextStyle(
