@@ -243,6 +243,7 @@ class _FormPurchasePageState extends State<FormPurchasePage> {
         transactionId: transactionId,
         medicineData: _selectedMedicine!,
         buyerName: _buyerNameController.text,
+        username: widget.username,
         quantity: quantity,
         totalPrice: totalPrice,
         date: DateTime.now(),
@@ -268,7 +269,7 @@ class _FormPurchasePageState extends State<FormPurchasePage> {
         // Navigasi ke halaman histori dengan pushReplacement
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HistoryPurchasePage()),
+          MaterialPageRoute(builder: (context) => HistoryPurchasePage(username: widget.username)),
         );
       }
     } catch (e) {

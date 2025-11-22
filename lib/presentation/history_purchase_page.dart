@@ -5,7 +5,9 @@ import '../data/models/transaction_model.dart';
 import 'transaction_detail_page.dart';
 
 class HistoryPurchasePage extends StatefulWidget {
-  const HistoryPurchasePage({super.key});
+  final String username;
+  
+  const HistoryPurchasePage({super.key, required this.username});
 
   @override
   State<HistoryPurchasePage> createState() => _HistoryPurchasePageState();
@@ -28,7 +30,7 @@ class _HistoryPurchasePageState extends State<HistoryPurchasePage> {
     });
 
     try {
-      final transactions = await _transactionDao.getAllTransactions();
+      final transactions = await _transactionDao.getTransactionsByUsername(widget.username);
       setState(() {
         _transactions = transactions;
         _isLoading = false;

@@ -60,6 +60,7 @@ class Transaction {
   final String transactionId;
   final Medicine medicineData;
   final String buyerName;
+  final String username;
   final int quantity;
   final double totalPrice;
   final DateTime date;
@@ -73,6 +74,7 @@ class Transaction {
     required this.transactionId,
     required this.medicineData,
     required this.buyerName,
+    required this.username,
     required this.quantity,
     required this.totalPrice,
     required this.date,
@@ -93,6 +95,7 @@ class Transaction {
       'medicinePrice': medicineData.price,
       'medicineImage': medicineData.imageAsset,
       'buyerName': buyerName,
+      'username': username,
       'quantity': quantity,
       'totalPrice': totalPrice,
       'date': date.toIso8601String(),
@@ -116,6 +119,7 @@ class Transaction {
         price: (map['medicinePrice'] as num).toDouble(),
       ),
       buyerName: map['buyerName'] as String,
+      username: map['username'] as String,
       quantity: map['quantity'] as int,
       totalPrice: (map['totalPrice'] as num).toDouble(),
       date: DateTime.parse(map['date'] as String),
@@ -132,6 +136,7 @@ class Transaction {
     String? transactionId,
     Medicine? medicineData,
     String? buyerName,
+    String? username,
     int? quantity,
     double? totalPrice,
     DateTime? date,
@@ -145,6 +150,7 @@ class Transaction {
       transactionId: transactionId ?? this.transactionId,
       medicineData: medicineData ?? this.medicineData,
       buyerName: buyerName ?? this.buyerName,
+      username: username ?? this.username,
       quantity: quantity ?? this.quantity,
       totalPrice: totalPrice ?? this.totalPrice,
       date: date ?? this.date,

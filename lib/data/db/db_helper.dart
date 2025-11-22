@@ -21,7 +21,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'kitasehat.db');
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -48,6 +48,7 @@ class DatabaseHelper {
         medicinePrice REAL NOT NULL,
         medicineImage TEXT NOT NULL,
         buyerName TEXT NOT NULL,
+        username TEXT NOT NULL,
         quantity INTEGER NOT NULL,
         totalPrice REAL NOT NULL,
         date TEXT NOT NULL,
@@ -64,6 +65,11 @@ class DatabaseHelper {
     if (oldVersion < 2) {
       await db.execute('''
         ALTER TABLE transactions ADD COLUMN recipeImagePath TEXT
+      ''');
+    }
+    if (oldVersion < 3) {
+      await db.execute('''
+        ALTER TABLE transactions ADD COLUMN username TEXT NOT NULL DEFAULT ''
       ''');
     }
   }

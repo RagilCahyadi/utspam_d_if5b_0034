@@ -44,6 +44,21 @@ class TransactionDao {
     });
   }
 
+  /// Read - Get transactions by username
+  Future<List<Transaction>> getTransactionsByUsername(String username) async {
+    final db = await _dbHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'transactions',
+      where: 'username = ?',
+      whereArgs: [username],
+      orderBy: 'date DESC',
+    );
+
+    return List.generate(maps.length, (i) {
+      return Transaction.fromMap(maps[i]);
+    });
+  }
+
   /// Read - Get transactions by status
   Future<List<Transaction>> getTransactionsByStatus(
       TransactionStatus status) async {

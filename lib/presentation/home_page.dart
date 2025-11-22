@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => HistoryPurchasePage(),
+                                  builder: (context) => HistoryPurchasePage(username: widget.username),
                                 ),
                               );
                             },
