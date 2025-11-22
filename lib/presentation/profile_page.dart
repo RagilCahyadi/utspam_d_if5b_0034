@@ -1,7 +1,11 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import '../data/db/user_dao.dart';
 import '../data/models/user_model.dart';
 import 'login_page.dart';
+import 'edit_profile_page.dart';
+import 'change_password_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final String username;
@@ -218,6 +222,66 @@ class _ProfilePageState extends State<ProfilePage> {
             color: Colors.red,
           ),
           SizedBox(height: 24),
+          // Edit Profile Button
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditProfilePage(user: _user!),
+                  ),
+                );
+                if (result == true) {
+                  _loadUserData(); // Reload data after edit
+                }
+              },
+              icon: Icon(Icons.edit),
+              label: Text(
+                'Edit Profil',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 12),
+          // Change Password Button
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChangePasswordPage(user: _user!),
+                  ),
+                );
+              },
+              icon: Icon(Icons.lock_reset),
+              label: Text(
+                'Ubah Password',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 12),
+          // Logout Button
           SizedBox(
             width: double.infinity,
             height: 50,
