@@ -1,47 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:utspam_d_if5b_0034/presentation/login_page.dart';
+import 'package:utspam_d_if5b_0034/presentation/form_purchase_page.dart';
+import 'package:utspam_d_if5b_0034/presentation/history_purchase_page.dart';
+import 'package:utspam_d_if5b_0034/presentation/profile_page.dart';
+import '../data/models/medicine_model.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.nama});
+  const HomePage({super.key, required this.nama, required this.username});
   final String nama;
+  final String username;
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  // Data obat dalam list
-  final List<Map<String, dynamic>> medicines = [
-    {
-      'name': 'Paracetamol 500mg',
-      'category': 'Pereda Nyeri',
-      'price': 'IDR 15,000',
-      'image': 'assets/images/paracetamol500g.webp',
-    },
-    {
-      'name': 'Amoxicillin 250mg',
-      'category': 'Antibiotik',
-      'price': 'IDR 5,800',
-      'image': 'assets/images/amoxicillin250g.webp',
-    },
-    {
-      'name': 'Tablet Tambah Darah',
-      'category': 'Salut Selaput',
-      'price': 'IDR 4,400',
-      'image': 'assets/images/tab_tambahdarah.webp',
-    },
-    {
-      'name': 'Vitamin C 250mg',
-      'category': 'Vitamin',
-      'price': 'IDR 15,028',
-      'image': 'assets/images/vitaminc250mg.webp',
-    },
-    {
-      'name': 'Dettol Antiseptik 45 ML',
-      'category': 'Antiseptik',
-      'price': 'IDR 11,400',
-      'image': 'assets/images/dettol45ml.webp',
-    },
+  // Data obat dalam list menggunakan Medicine model
+  final List<Medicine> medicines = [
+    Medicine(
+      id: 'MED001',
+      name: 'Paracetamol 500mg',
+      category: 'Pereda Nyeri',
+      imageAsset: 'assets/images/paracetamol500g.webp',
+      price: 15000,
+    ),
+    Medicine(
+      id: 'MED002',
+      name: 'Amoxicillin 250mg',
+      category: 'Antibiotik',
+      imageAsset: 'assets/images/amoxicillin250g.webp',
+      price: 5800,
+    ),
+    Medicine(
+      id: 'MED003',
+      name: 'Tablet Tambah Darah',
+      category: 'Salut Selaput',
+      imageAsset: 'assets/images/tab_tambahdarah.webp',
+      price: 4400,
+    ),
+    Medicine(
+      id: 'MED004',
+      name: 'Vitamin C 250mg',
+      category: 'Vitamin',
+      imageAsset: 'assets/images/vitaminc250mg.webp',
+      price: 15028,
+    ),
+    Medicine(
+      id: 'MED005',
+      name: 'Dettol Antiseptik 45 ML',
+      category: 'Antiseptik',
+      imageAsset: 'assets/images/dettol45ml.webp',
+      price: 11400,
+    ),
   ];
 
   @override
@@ -76,7 +86,12 @@ class _HomePageState extends State<HomePage> {
                             iconColor: Colors.green,
                             title: 'Beli Obat',
                             onTap: () {
-                              // Navigator ke halaman beli obat
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FormPurchasePage(),
+                                ),
+                              );
                             },
                           ),
                         ),
@@ -87,7 +102,12 @@ class _HomePageState extends State<HomePage> {
                             iconColor: Colors.blue,
                             title: 'Histori Pemesanan',
                             onTap: () {
-                              // Navigator ke halaman histori
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HistoryPurchasePage(),
+                                ),
+                              );
                             },
                           ),
                         ),
@@ -102,7 +122,14 @@ class _HomePageState extends State<HomePage> {
                             iconColor: Colors.orange,
                             title: 'Profil',
                             onTap: () {
-                              // Navigator ke halaman profil
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfilePage(
+                                    username: widget.username,
+                                  ),
+                                ),
+                              );
                             },
                           ),
                         ),
@@ -112,11 +139,36 @@ class _HomePageState extends State<HomePage> {
                             icon: Icons.logout,
                             iconColor: Colors.red,
                             title: 'Logout',
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                context, 
-                                MaterialPageRoute(builder: (context) => LoginPage())
+                            onTap: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Konfirmasi Logout'),
+                                  content: Text('Apakah Anda yakin ingin keluar?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, false),
+                                      child: Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.pop(context, true),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: Text('Logout'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              
+                              if (confirm == true && context.mounted) {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => LoginPage()),
+                                  (route) => false,
                                 );
+                              }
                             },
                           ),
                         ),
@@ -139,10 +191,7 @@ class _HomePageState extends State<HomePage> {
                   (medicine) => Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: _buildMedicineCard(
-                      name: medicine['name'],
-                      category: medicine['category'],
-                      price: medicine['price'],
-                      image: medicine['image'],
+                      medicine: medicine,
                     ),
                   ),
                 ),
@@ -186,10 +235,7 @@ class _HomePageState extends State<HomePage> {
 
   // Method untuk membuat medicine card yang lebih menarik
   Widget _buildMedicineCard({
-    required String name,
-    required String category,
-    required String price,
-    required String image,
+    required Medicine medicine,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -223,7 +269,7 @@ class _HomePageState extends State<HomePage> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   child: Image.asset(
-                    image,
+                    medicine.imageAsset,
                     width: double.infinity,
                     height: 180,
                     fit: BoxFit.contain,
@@ -323,7 +369,7 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        name,
+                        medicine.name,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -350,7 +396,7 @@ class _HomePageState extends State<HomePage> {
                       Icon(Icons.category, size: 14, color: Colors.cyan[900]),
                       SizedBox(width: 6),
                       Text(
-                        category,
+                        medicine.category,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.cyan[900],
@@ -382,7 +428,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          price,
+                          'IDR ${_formatPrice(medicine.price)}',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -408,17 +454,14 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: ElevatedButton(
                         onPressed: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => FormulirPembelianPage(
-                          //       namaObat: name,
-                          //       hargaObat: price,
-                          //       kategoriObat: category,
-                          //       gambarObat: image,
-                          //     ),
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FormPurchasePage(
+                                selectedMedicine: medicine,
+                              ),
+                            ),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
@@ -457,5 +500,12 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  String _formatPrice(double price) {
+    return price.toStringAsFixed(0).replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]},',
+        );
   }
 }
