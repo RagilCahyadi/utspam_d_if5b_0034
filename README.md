@@ -191,7 +191,6 @@ assets/
     ├── paracetamol.jpg
     ├── amoxicillin.jpg
     ├── vitamin_c.jpg
-    └── ... (total 15 gambar obat)
 
 android/                              # Konfigurasi Android
 ios/                                  # Konfigurasi iOS
