@@ -134,7 +134,6 @@ class TransactionDao {
     return await db.delete('transactions');
   }
 
-  // ==================== STATISTICS & REPORTS ====================
 
   /// Get total transactions count
   Future<int> getTotalTransactionsCount() async {
