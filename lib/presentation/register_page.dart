@@ -50,6 +50,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "Masukkan nama lengkap anda";
+                            } else if(!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                              return "Masukkan dengan huruf";
                             }
                             return null;
                           },
@@ -97,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             } else if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
                               return 'Masukkan dengan angka';
                             } else if (value.length < 10) {
-                              return 'Mohon masukkan nomer anda yang valid, 10 - 13 digit';
+                              return 'Masukkan nomer minimal: 10 - 13 digit';
                             }
                             return null;
                           },
@@ -118,6 +120,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "Masukkan alamat anda";
+                            } else if (value.length < 5) {
+                              return "Alamat harus berisi minimal 5 karakter";
                             }
                             return null;
                           },
@@ -138,6 +142,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "Masukkan username anda";
+                            } else if (value.length < 4) {
+                              return "Username harus berisi minimal 4 karakter";
                             }
                             return null;
                           },
@@ -194,7 +200,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             if (value!.isEmpty) {
                               return 'Mohon masukkan ulang password anda';
                             } else if (value != _passwordController.text) {
-                              return 'Password harus sama';
+                              return 'Password tidak sesuai';
                             }
                             return null;
                           },

@@ -69,6 +69,8 @@ class _LoginPageState extends State<LoginPage> {
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "Silahkan masukkan username anda";
+                                } else if (value.length < 4) {
+                                  return "Username harus berisi minimal 4 karakter";
                                 }
                                 return null;
                               },
@@ -76,9 +78,13 @@ class _LoginPageState extends State<LoginPage> {
                               decoration: InputDecoration(
                                 labelText: "Username",
                                 hintText: "Masukkan username anda",
-                                icon: Icon(Icons.person),
+                                border: OutlineInputBorder(),
+                                filled: true,
+                                fillColor: Colors.white,
+                                prefixIcon: Icon(Icons.person),
                               ),
                             ),
+                            SizedBox(height: 20),
                             TextFormField(
                               controller: _passwordController,
                               autovalidateMode:
@@ -96,7 +102,10 @@ class _LoginPageState extends State<LoginPage> {
                               decoration: InputDecoration(
                                 labelText: "Password",
                                 hintText: "Masukkan password anda",
-                                icon: Icon(Icons.lock),
+                                border: OutlineInputBorder(),
+                                filled: true,
+                                fillColor: Colors.white,
+                                prefixIcon: Icon(Icons.lock),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     isObscure
