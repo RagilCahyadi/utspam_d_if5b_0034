@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../data/models/transaction_model.dart';
 import '../data/db/transaction_dao.dart';
+import 'edit_transaction_page.dart';
 
 class TransactionDetailPage extends StatefulWidget {
   final Transaction transaction;
@@ -81,14 +82,20 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
     }
   }
 
-  void _editTransaction() {
-    // TODO: Navigate to edit page (waiting for specifications)
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Fitur edit akan segera tersedia'),
-        backgroundColor: Colors.blue,
+  Future<void> _editTransaction() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditTransactionPage(transaction: _transaction),
       ),
     );
+
+    // Update transaction if changes were saved
+    if (result is Transaction) {
+      setState(() {
+        _transaction = result;
+      });
+    }
   }
 
   @override
