@@ -104,6 +104,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               return 'Masukkan dengan angka';
                             } else if (value.length < 10) {
                               return 'Masukkan nomer minimal: 10 - 13 digit';
+                            } else if (value.length > 13) {
+                              return 'Masukkan nomer maksimal: 10 - 13 digit';
                             }
                             return null;
                           },
@@ -314,7 +316,7 @@ class _RegisterPageState extends State<RegisterPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Username sudah terdaftar!'),
+              content: Text('Username sudah terdaftar!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
               backgroundColor: Colors.red,
             ),
           );
@@ -338,7 +340,7 @@ class _RegisterPageState extends State<RegisterPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Registrasi berhasil! Silakan login.'),
+            content: Text('Registrasi berhasil! Silakan login.', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
             backgroundColor: Colors.green,
           ),
         );
@@ -355,7 +357,7 @@ class _RegisterPageState extends State<RegisterPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Registrasi gagal: ${e.toString()}'),
+            content: Text('Registrasi gagal: ${e.toString()}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
             backgroundColor: Colors.red,
           ),
         );

@@ -218,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Username atau password salah!'),
+              content: Text('Username atau password salah!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
               backgroundColor: Colors.red,
             ),
           );
@@ -230,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Login berhasil! Selamat datang ${user.fullName}'),
+            content: Text('Login berhasil! Selamat datang ${user.fullName}',style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 1),
           ),
@@ -240,7 +240,10 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(nama: user.fullName),
+            builder: (context) => HomePage(
+              nama: user.fullName,
+              username: user.username,
+            ),
           ),
           (route) => false,
         );
@@ -249,7 +252,7 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Login gagal: ${e.toString()}'),
+            content: Text('Login gagal: ${e.toString()}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
             backgroundColor: Colors.red,
           ),
         );
