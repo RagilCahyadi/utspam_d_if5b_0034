@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utspam_d_if5b_0034/presentation/home_page.dart';
 import 'package:utspam_d_if5b_0034/presentation/register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -129,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                                     Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => LoginPage(),
+                                        builder: (context) => HomePage(nama: _usernameController.text),
                                       ),
                                       (route) => false,
                                     );
@@ -146,7 +147,9 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 child: Text(
                                   'Login',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
