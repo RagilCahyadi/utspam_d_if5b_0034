@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utspam_d_if5b_0034/presentation/login_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.nama});
@@ -111,7 +112,12 @@ class _HomePageState extends State<HomePage> {
                             icon: Icons.logout,
                             iconColor: Colors.red,
                             title: 'Logout',
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context, 
+                                MaterialPageRoute(builder: (context) => LoginPage())
+                                );
+                            },
                           ),
                         ),
                       ],
