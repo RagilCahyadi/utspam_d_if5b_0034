@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../data/db/transaction_dao.dart';
 import '../data/models/transaction_model.dart';
+import 'transaction_detail_page.dart';
 
 class HistoryPurchasePage extends StatefulWidget {
   const HistoryPurchasePage({super.key});
@@ -105,13 +106,27 @@ class _HistoryPurchasePageState extends State<HistoryPurchasePage> {
     );
   }
 
-  void _showTransactionDetail(Transaction transaction) {
+  void _showEReceipt(Transaction transaction) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => _buildTransactionDetailSheet(transaction),
     );
+  }
+
+  Future<void> _navigateToDetail(Transaction transaction) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TransactionDetailPage(transaction: transaction),
+      ),
+    );
+    
+    // Reload if transaction was deleted
+    if (result == true) {
+      _loadTransactions();
+    }
   }
 
   Widget _buildTransactionCard(Transaction transaction) {
@@ -126,103 +141,126 @@ class _HistoryPurchasePageState extends State<HistoryPurchasePage> {
       margin: EdgeInsets.only(bottom: 16),
       elevation: 2,
       child: InkWell(
-        onTap: () => _showTransactionDetail(transaction),
+        onTap: () => _navigateToDetail(transaction),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    transaction.medicineData.name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      transaction.medicineData.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: statusColor),
-                  ),
-                  child: Text(
-                    statusText,
-                    style: TextStyle(
-                      color: statusColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: statusColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: statusColor),
+                    ),
+                    child: Text(
+                      statusText,
+                      style: TextStyle(
+                        color: statusColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Pembeli: ${transaction.buyerName}',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
+                ],
               ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              'Tanggal: ${_formatDate(transaction.date)}',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              'Jumlah: ${transaction.quantity} unit',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-            ),
-            if (transaction.notes != null && transaction.notes!.isNotEmpty) ...[
-              SizedBox(height: 4),
+              SizedBox(height: 8),
               Text(
-                'Catatan: ${transaction.notes}',
+                'Pembeli: ${transaction.buyerName}',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
-                  fontStyle: FontStyle.italic,
                 ),
               ),
-            ],
-            SizedBox(height: 8),
-            Divider(),
-            SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              SizedBox(height: 4),
+              Text(
+                'Tanggal: ${_formatDate(transaction.date)}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                'Jumlah: ${transaction.quantity} unit',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+              if (transaction.notes != null && transaction.notes!.isNotEmpty) ...[
+                SizedBox(height: 4),
                 Text(
-                  'Total:',
+                  'Catatan: ${transaction.notes}',
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                    fontStyle: FontStyle.italic,
                   ),
-                ),
-                Text(
-                  'IDR ${_formatPrice(transaction.totalPrice)}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
-            ),
-          ],
-        ),
+              SizedBox(height: 8),
+              Divider(),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Total:',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        'IDR ${_formatPrice(transaction.totalPrice)}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => _showEReceipt(transaction),
+                    icon: Icon(Icons.receipt_long, size: 18),
+                    label: Text('E-Receipt'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
