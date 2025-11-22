@@ -19,7 +19,12 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'kitasehat.db');
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: 2,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -49,9 +54,18 @@ class DatabaseHelper {
         notes TEXT,
         purchaseMethod TEXT NOT NULL,
         recipeNumber TEXT,
+        recipeImagePath TEXT,
         status TEXT NOT NULL
       )
     ''');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        ALTER TABLE transactions ADD COLUMN recipeImagePath TEXT
+      ''');
+    }
   }
 
   Future<void> close() async {

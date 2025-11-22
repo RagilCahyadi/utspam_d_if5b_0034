@@ -1,13 +1,22 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import '../data/models/medicine_model.dart';
 import '../data/models/transaction_model.dart';
 import '../data/db/transaction_dao.dart';
+import '../data/db/user_dao.dart';
 import 'history_purchase_page.dart';
 
 class FormPurchasePage extends StatefulWidget {
   final Medicine? selectedMedicine;
+  final String username;
 
-  const FormPurchasePage({super.key, this.selectedMedicine});
+  const FormPurchasePage({
+    super.key,
+    this.selectedMedicine,
+    required this.username,
+  });
 
   @override
   State<FormPurchasePage> createState() => _FormPurchasePageState();
@@ -16,6 +25,8 @@ class FormPurchasePage extends StatefulWidget {
 class _FormPurchasePageState extends State<FormPurchasePage> {
   final _formKey = GlobalKey<FormState>();
   final TransactionDao _transactionDao = TransactionDao();
+  final UserDao _userDao = UserDao();
+  final ImagePicker _picker = ImagePicker();
 
   final TextEditingController _buyerNameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController(text: '1');
@@ -24,7 +35,9 @@ class _FormPurchasePageState extends State<FormPurchasePage> {
 
   Medicine? _selectedMedicine;
   PurchaseMethod _purchaseMethod = PurchaseMethod.direct;
+  File? _recipeImage;
   bool _isLoading = false;
+  bool _isLoadingUser = true;
 
   // Daftar obat yang tersedia
   final List<Medicine> _availableMedicines = [
@@ -69,6 +82,102 @@ class _FormPurchasePageState extends State<FormPurchasePage> {
   void initState() {
     super.initState();
     _selectedMedicine = widget.selectedMedicine;
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final user = await _userDao.getUserByUsername(widget.username);
+      if (user != null) {
+        setState(() {
+          _buyerNameController.text = user.fullName;
+          _isLoadingUser = false;
+        });
+      } else {
+        setState(() {
+          _isLoadingUser = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoadingUser = false;
+      });
+    }
+  }
+
+  Future<void> _showImageSourceDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Pilih Sumber Foto'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.camera_alt, color: Colors.green),
+                title: Text('Kamera'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              Divider(),
+              ListTile(
+                leading: Icon(Icons.photo_library, color: Colors.blue),
+                title: Text('Galeri'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        imageQuality: 80,
+        maxWidth: 1920,
+        maxHeight: 1080,
+      );
+
+      if (image != null) {
+        setState(() {
+          _recipeImage = File(image.path);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal mengambil foto: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<String?> _saveRecipeImage() async {
+    if (_recipeImage == null) return null;
+
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName = 'recipe_$timestamp.jpg';
+      final savedPath = '${directory.path}/$fileName';
+
+      await _recipeImage!.copy(savedPath);
+      return savedPath;
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
@@ -101,6 +210,17 @@ class _FormPurchasePageState extends State<FormPurchasePage> {
       return;
     }
 
+    // Validasi foto resep jika metode pembelian adalah resep
+    if (_purchaseMethod == PurchaseMethod.recipe && _recipeImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Silakan ambil foto resep terlebih dahulu'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -108,6 +228,12 @@ class _FormPurchasePageState extends State<FormPurchasePage> {
     try {
       final quantity = int.parse(_quantityController.text);
       final totalPrice = _calculateTotal();
+
+      // Save recipe image if exists
+      String? recipeImagePath;
+      if (_purchaseMethod == PurchaseMethod.recipe && _recipeImage != null) {
+        recipeImagePath = await _saveRecipeImage();
+      }
 
       // Generate transaction ID
       final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -125,6 +251,7 @@ class _FormPurchasePageState extends State<FormPurchasePage> {
         recipeNumber: _purchaseMethod == PurchaseMethod.recipe
             ? _recipeNumberController.text
             : null,
+        recipeImagePath: recipeImagePath,
         status: TransactionStatus.success,
       );
 
@@ -299,7 +426,20 @@ class _FormPurchasePageState extends State<FormPurchasePage> {
                 labelText: 'Nama Pembeli',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.person),
+                filled: true,
+                fillColor: Colors.grey[100],
+                suffixIcon: _isLoadingUser
+                    ? Padding(
+                        padding: EdgeInsets.all(12),
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : null,
               ),
+              readOnly: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Nama pembeli harus diisi';
@@ -375,7 +515,7 @@ class _FormPurchasePageState extends State<FormPurchasePage> {
               activeColor: Colors.green,
             ),
 
-            // Nomor Resep (conditional)
+            // Nomor Resep dan Foto Resep (conditional)
             if (_purchaseMethod == PurchaseMethod.recipe) ...[
               SizedBox(height: 16),
               TextFormField(
@@ -403,6 +543,90 @@ class _FormPurchasePageState extends State<FormPurchasePage> {
                   }
                   return null;
                 },
+              ),
+              SizedBox(height: 16),
+              // Upload Foto Resep
+              Card(
+                elevation: 2,
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Foto Resep Dokter *',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      if (_recipeImage == null) ...[
+                        OutlinedButton.icon(
+                          onPressed: _showImageSourceDialog,
+                          icon: Icon(Icons.camera_alt),
+                          label: Text('Ambil Foto Resep'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.green,
+                            side: BorderSide(color: Colors.green),
+                            minimumSize: Size(double.infinity, 48),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Foto resep wajib diupload untuk pembelian dengan resep',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ] else ...[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            _recipeImage!,
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _showImageSourceDialog,
+                                icon: Icon(Icons.refresh),
+                                label: Text('Ganti Foto'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.orange,
+                                  side: BorderSide(color: Colors.orange),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  setState(() {
+                                    _recipeImage = null;
+                                  });
+                                },
+                                icon: Icon(Icons.delete),
+                                label: Text('Hapus'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.red,
+                                  side: BorderSide(color: Colors.red),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
             ],
 

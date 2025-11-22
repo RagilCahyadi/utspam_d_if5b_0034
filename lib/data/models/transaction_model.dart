@@ -66,6 +66,7 @@ class Transaction {
   final String? notes;
   final PurchaseMethod purchaseMethod;
   final String? recipeNumber;
+  final String? recipeImagePath;
   final TransactionStatus status;
 
   Transaction({
@@ -78,6 +79,7 @@ class Transaction {
     this.notes,
     required this.purchaseMethod,
     this.recipeNumber,
+    this.recipeImagePath,
     required this.status,
   });
 
@@ -97,6 +99,7 @@ class Transaction {
       'notes': notes,
       'purchaseMethod': purchaseMethod.name,
       'recipeNumber': recipeNumber,
+      'recipeImagePath': recipeImagePath,
       'status': status.name,
     };
   }
@@ -119,6 +122,7 @@ class Transaction {
       notes: map['notes'] as String?,
       purchaseMethod: PurchaseMethod.fromString(map['purchaseMethod'] as String),
       recipeNumber: map['recipeNumber'] as String?,
+      recipeImagePath: map['recipeImagePath'] as String?,
       status: TransactionStatus.fromString(map['status'] as String),
     );
   }
@@ -134,6 +138,7 @@ class Transaction {
     String? notes,
     PurchaseMethod? purchaseMethod,
     String? recipeNumber,
+    String? recipeImagePath,
     TransactionStatus? status,
   }) {
     return Transaction(
@@ -146,6 +151,7 @@ class Transaction {
       notes: notes ?? this.notes,
       purchaseMethod: purchaseMethod ?? this.purchaseMethod,
       recipeNumber: recipeNumber ?? this.recipeNumber,
+      recipeImagePath: recipeImagePath ?? this.recipeImagePath,
       status: status ?? this.status,
     );
   }

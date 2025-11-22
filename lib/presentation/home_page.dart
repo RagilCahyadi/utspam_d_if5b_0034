@@ -89,7 +89,9 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => FormPurchasePage(),
+                                  builder: (context) => FormPurchasePage(
+                                    username: widget.username,
+                                  ),
                                 ),
                               );
                             },
@@ -459,6 +461,7 @@ class _HomePageState extends State<HomePage> {
                             MaterialPageRoute(
                               builder: (context) => FormPurchasePage(
                                 selectedMedicine: medicine,
+                                username: widget.username,
                               ),
                             ),
                           );
